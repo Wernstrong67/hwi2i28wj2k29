@@ -1,0 +1,76 @@
+<html>
+ <head> 
+  <meta charset="UTF-8"> <!--   <meta name="viewport" content="width=device-width, initial-scale=1.0">  --> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script> 
+  <script src="https://threejsfundamentals.org/threejs/resources/threejs/r113/examples/js/controls/OrbitControls.js"></script> 
+  <script src="https://threejsfundamentals.org/threejs/resources/threejs/r113/examples/js/loaders/OBJLoader.js"></script> 
+ </head> 
+ <body> 
+  <p id="loading"></p> 
+  <div id="author"> 
+   <p>Made with love by 木本</p> 
+  </div> <!-- vertext shader a.k.a. pixel shader --> 
+  <script id="vertexShader" type="x-shader/x-vertex">
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        varying vec2 vUv;
+
+        void main()
+        {
+            vNormal = normal;
+            vPosition = position;
+            vUv = uv;
+            
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+        }
+    </script> <!-- fragment shader a.k.a. pixel shader --> 
+  <script id="fragmentShader" type="x-shader/x-vertex">
+        
+        // == Uniform inputs ==
+        // uniform sampler2D texture;
+        // uniform float time;
+        uniform vec3 light_pos;
+
+        // == Inputs from vertex shader ==
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        varying vec2 vUv;
+
+        void main(void)
+        {
+            // const vec3 light_pos =  vec3(10.0, 100.0, 100.0);
+            const float specular_power = 8.0;
+
+            // Support vectors
+            vec3 P = vec3(vPosition);
+            vec3 N = normalize(vNormal);
+            vec3 L = normalize(light_pos - P);
+            vec3 R = reflect(-L, N);
+            vec3 V = normalize(-P);
+
+            // Light contribution
+            float lambert = max(0.0, dot(N, L));
+
+            // Gloss
+            float specular = pow( max(0.0, dot(R, V)), specular_power );
+
+            // Color
+            vec3 c = vec3(0., 0.1, 0.2);
+            if(lambert >= 0.9)
+                c = vec3(0.5, 0.9, 0.05);
+            else if(lambert >= 0.8)
+                c = vec3(0.4, 0.75, 0.05);
+            else if(lambert >= 0.5)
+                c = vec3(0.1, 0.3, 0.2);
+
+            if(specular >= 0.1)
+                c += vec3(0.2);
+
+            gl_FragColor = vec4(c,1.0);
+        }
+    </script> 
+  <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div> 
+ </body>
+</html>
