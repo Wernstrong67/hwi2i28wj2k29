@@ -1,5 +1,5 @@
 /*
-*Created by: Ankush Chugh on 5 Oct, 2019 with Dcoder mobile IDE
+*Created by: Edet Nehemiah on 3 Apr,2023 with Dcoder mobile IDE
 *The code iterates through an array of string representing characters,
 it mimics typing effect by splitting using new line and introducing delay to print each line.
 */
